@@ -1,9 +1,11 @@
+import { SlidersHorizontal } from "lucide-react";
+
 function CompareOption({ checked, label, onChange }) {
   return (
     <label className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-100">
       <input
         checked={checked}
-        className="h-4 w-4 rounded border-zinc-300 accent-teal-700"
+        className="h-4 w-4 rounded border-zinc-300 accent-violet-700"
         onChange={(event) => onChange(event.target.checked)}
         type="checkbox"
       />
@@ -24,10 +26,11 @@ export function CompareSettings({
     <div className="relative">
       <button
         aria-expanded={compareMenuOpen}
-        className="w-full rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-zinc-400 sm:w-auto"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-zinc-400 sm:w-auto"
         onClick={onToggleMenu}
         type="button"
       >
+        <SlidersHorizontal aria-hidden="true" size={16} />
         Compare settings
       </button>
       {compareMenuOpen ? (

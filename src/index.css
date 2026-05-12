@@ -144,16 +144,16 @@ html.dark .ring-emerald-200 {
   --tw-ring-color: #15803d;
 }
 
-html.dark .bg-teal-50 {
+html.dark .bg-violet-50 {
   background-color: #042f2e;
 }
 
-html.dark .text-teal-800,
-html.dark .text-teal-700 {
+html.dark .text-violet-800,
+html.dark .text-violet-700 {
   color: #5eead4;
 }
 
-html.dark .ring-teal-200 {
+html.dark .ring-violet-200 {
   --tw-ring-color: #0f766e;
 }
 

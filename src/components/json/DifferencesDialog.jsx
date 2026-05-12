@@ -1,3 +1,5 @@
+import { X } from "lucide-react";
+import { IconButton } from "../common/IconButton";
 import { diffBadgeClass, diffLabel } from "../../lib/ui";
 
 export function DifferencesDialog({
@@ -26,13 +28,9 @@ export function DifferencesDialog({
               {differences.length === 1 ? "" : "s"} found
             </p>
           </div>
-          <button
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:border-zinc-400"
-            onClick={onClose}
-            type="button"
-          >
-            Close
-          </button>
+          <IconButton label="Close differences dialog" onClick={onClose}>
+            <X aria-hidden="true" size={18} />
+          </IconButton>
         </div>
 
         <div className="overflow-auto">

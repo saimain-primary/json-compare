@@ -74,7 +74,7 @@ export function JsonEditorPanel({
         </div>
         <textarea
           aria-label={panel.label}
-          className="min-h-[360px] flex-1 resize-y border-0 bg-white p-3 font-mono text-sm leading-6 text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-teal-400 sm:min-h-[460px] sm:p-4 lg:min-h-[560px]"
+          className="min-h-[360px] flex-1 resize-y border-0 bg-white p-3 font-mono text-sm leading-6 text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-violet-400 sm:min-h-[460px] sm:p-4 lg:min-h-[560px]"
           onChange={(event) => panel.setValue(event.target.value)}
           onScroll={(event) =>
             onEditorScrollChange((current) => ({

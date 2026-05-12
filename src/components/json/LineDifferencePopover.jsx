@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { diffLabel } from "../../lib/ui";
 
 export function LineDifferencePopover({ differences, lineNumber, onClose }) {
@@ -12,11 +13,12 @@ export function LineDifferencePopover({ differences, lineNumber, onClose }) {
           </p>
         </div>
         <button
-          className="rounded px-2 py-1 text-xs font-semibold text-rose-800 transition hover:bg-rose-100"
+          aria-label="Close line difference popup"
+          className="inline-flex h-7 w-7 items-center justify-center rounded text-rose-800 transition hover:bg-rose-100"
           onClick={onClose}
           type="button"
         >
-          Close
+          <X aria-hidden="true" size={16} />
         </button>
       </div>
       <ul className="max-h-56 space-y-2 overflow-auto text-xs">

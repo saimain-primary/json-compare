@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Save, X } from "lucide-react";
+import { IconButton } from "../common/IconButton";
 import { supabase } from "../../supabaseClient";
 
 export function ProfileDialog({ onClose, session }) {
@@ -60,20 +62,16 @@ export function ProfileDialog({ onClose, session }) {
             </h2>
             <p className="mt-1 text-sm text-zinc-500">{session.user.email}</p>
           </div>
-          <button
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:border-zinc-400"
-            onClick={onClose}
-            type="button"
-          >
-            Close
-          </button>
+          <IconButton label="Close profile dialog" onClick={onClose}>
+            <X aria-hidden="true" size={18} />
+          </IconButton>
         </div>
 
         <div className="space-y-4 px-5 py-5">
           <label className="block text-sm font-semibold text-zinc-800">
             Display name
             <input
-              className="mt-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+              className="mt-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-100"
               onChange={(event) => setDisplayName(event.target.value)}
               placeholder="Your name"
               type="text"
@@ -85,7 +83,7 @@ export function ProfileDialog({ onClose, session }) {
             New password
             <input
               autoComplete="new-password"
-              className="mt-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+              className="mt-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-100"
               minLength={6}
               onChange={(event) => setNewPassword(event.target.value)}
               placeholder="Leave blank to keep current password"
@@ -103,10 +101,11 @@ export function ProfileDialog({ onClose, session }) {
 
         <div className="flex justify-end border-t border-zinc-200 px-5 py-4">
           <button
-            className="rounded-md bg-zinc-950 px-4 py-2 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
+            className="inline-flex items-center gap-2 rounded-md bg-zinc-950 px-4 py-2 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
             disabled={profileLoading}
             type="submit"
           >
+            <Save aria-hidden="true" size={16} />
             {profileLoading ? "Saving..." : "Save profile"}
           </button>
         </div>

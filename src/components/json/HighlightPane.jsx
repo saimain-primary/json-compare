@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   containerLabel,
   formatValue,
   getChildPath,
-  getDescendantDifferenceCount,
   isContainerValue,
   keyFromPath,
   valueType,
@@ -44,6 +44,7 @@ function DiffPopover({ difference }) {
 
 function JsonTreeNode({
   depth,
+  descendantCounts,
   differences,
   expandedPaths,
   onToggle,
@@ -55,10 +56,7 @@ function JsonTreeNode({
   const directDifference = differences.find((difference) => {
     return difference.path === path;
   });
-  const descendantDifferenceCount = getDescendantDifferenceCount(
-    path,
-    differences,
-  );
+  const descendantDifferenceCount = descendantCounts.get(path) ?? 0;
   const highlighted = Boolean(directDifference);
   const hasDescendantDifference = descendantDifferenceCount > 0;
   const isExpanded = path === "$" || expandedPaths.has(path);
@@ -100,7 +98,11 @@ function JsonTreeNode({
                 onClick={() => onToggle(path)}
                 type="button"
               >
-                {isExpanded ? "-" : "+"}
+                {isExpanded ? (
+                  <ChevronDown aria-hidden="true" size={14} />
+                ) : (
+                  <ChevronRight aria-hidden="true" size={14} />
+                )}
               </button>
             ) : (
               <span className="h-5 w-5 shrink-0" />
@@ -130,6 +132,7 @@ function JsonTreeNode({
           {visibleEntries.map(([key, childValue]) => (
             <JsonTreeNode
               depth={depth + 1}
+              descendantCounts={descendantCounts}
               differences={differences}
               expandedPaths={expandedPaths}
               key={getChildPath(path, key, type === "array")}
@@ -167,6 +170,20 @@ function JsonTreeNode({
 export function HighlightPane({ data, differences, title }) {
   const [expandedPaths, setExpandedPaths] = useState(() => new Set(["$"]));
 
+  const descendantCounts = useMemo(() => {
+    const counts = new Map();
+    counts.set("$", differences.length);
+    for (const diff of differences) {
+      const parts = diff.path.split(/(?=\.|\[)/);
+      let prefix = "";
+      for (const part of parts) {
+        prefix += part;
+        counts.set(prefix, (counts.get(prefix) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [differences]);
+
   function togglePath(path) {
     setExpandedPaths((currentPaths) => {
       const nextPaths = new Set(currentPaths);
@@ -193,6 +210,7 @@ export function HighlightPane({ data, differences, title }) {
         <ol className="space-y-1 font-mono text-sm">
           <JsonTreeNode
             depth={0}
+            descendantCounts={descendantCounts}
             differences={differences}
             expandedPaths={expandedPaths}
             onToggle={togglePath}

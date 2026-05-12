@@ -1,3 +1,5 @@
+import { X } from "lucide-react";
+import { IconButton } from "../common/IconButton";
 import { HighlightPane } from "./HighlightPane";
 
 export function HighlightDialog({
@@ -27,13 +29,9 @@ export function HighlightDialog({
               Hover or focus a highlighted row to inspect the difference.
             </p>
           </div>
-          <button
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:border-zinc-400"
-            onClick={onClose}
-            type="button"
-          >
-            Close
-          </button>
+          <IconButton label="Close highlighted JSON dialog" onClick={onClose}>
+            <X aria-hidden="true" size={18} />
+          </IconButton>
         </div>
 
         <div className="overflow-auto p-2 sm:p-4">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import logo from "../assets/logo.png";
 import { GoogleAuthButton } from "../components/common/GoogleAuthButton";
 import { ThemeToggle } from "../components/common/ThemeToggle";
@@ -37,7 +38,7 @@ export function OAuthConsentPage({ onToggleTheme, session, theme }) {
         </div>
 
         <div className="space-y-3 text-center">
-          <p className="text-xs font-bold uppercase tracking-wide text-teal-700">
+          <p className="text-xs font-bold uppercase tracking-wide text-violet-700">
             Google authorization
           </p>
           <h1 className="text-2xl font-bold text-zinc-950">
@@ -68,12 +69,13 @@ export function OAuthConsentPage({ onToggleTheme, session, theme }) {
 
         {session ? (
           <button
-            className="mt-6 w-full rounded-md bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800"
             onClick={() => {
               window.location.href = getAuthRedirectUrl();
             }}
             type="button"
           >
+            <ArrowRight aria-hidden="true" size={16} />
             Open Blame the API
           </button>
         ) : (

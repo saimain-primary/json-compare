@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { RotateCcw } from "lucide-react";
 
 export class AppErrorBoundary extends Component {
   constructor(props) {
@@ -8,6 +9,10 @@ export class AppErrorBoundary extends Component {
 
   static getDerivedStateFromError() {
     return { hasError: true };
+  }
+
+  componentDidCatch(error, info) {
+    console.error("[AppErrorBoundary]", error, info?.componentStack);
   }
 
   render() {
@@ -23,10 +28,11 @@ export class AppErrorBoundary extends Component {
               saved locally, so reloading restores the safe demo workspace.
             </p>
             <button
-              className="mt-4 w-full rounded-md bg-rose-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 sm:w-auto"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-rose-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 sm:w-auto"
               onClick={() => window.location.reload()}
               type="button"
             >
+              <RotateCcw aria-hidden="true" size={16} />
               Reload
             </button>
           </section>

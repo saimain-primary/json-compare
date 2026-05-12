@@ -1,3 +1,5 @@
+import { Moon, Sun } from "lucide-react";
+
 export function ThemeToggle({ onToggle, theme }) {
   const isDark = theme === "dark";
 
@@ -8,10 +10,15 @@ export function ThemeToggle({ onToggle, theme }) {
       onClick={onToggle}
       type="button"
     >
+      {isDark ? (
+        <Moon aria-hidden="true" size={14} />
+      ) : (
+        <Sun aria-hidden="true" size={14} />
+      )}
       <span className="text-xs">{isDark ? "Dark" : "Light"}</span>
       <span
         className={`flex h-6 w-11 items-center rounded-full p-0.5 transition ${
-          isDark ? "bg-teal-700" : "bg-zinc-300"
+          isDark ? "bg-violet-700" : "bg-zinc-300"
         }`}
       >
         <span
