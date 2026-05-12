@@ -1,12 +1,12 @@
 export const starterSource = `{
-  "name": "json-compare",
+  "name": "blame-the-api",
   "version": "1.0.0",
   "features": ["paste", "format", "compare"],
   "enabled": true
 }`;
 
 export const starterTarget = `{
-  "name": "json-compare",
+  "name": "blame-the-api",
   "version": "1.1.0",
   "features": ["paste", "format", "compare", "export"],
   "enabled": true
@@ -18,7 +18,7 @@ export const defaultCompareOptions = {
   value: true,
 };
 
-export const themeStorageKey = "json-compare:theme";
+export const themeStorageKey = "blame-the-api:theme";
 
 export const maxDifferences = 500;
 export const maxRenderedLineNumbers = 3000;

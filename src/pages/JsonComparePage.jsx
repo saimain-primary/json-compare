@@ -21,6 +21,32 @@ import { DifferencesDialog } from "../components/json/DifferencesDialog";
 import { HighlightDialog } from "../components/json/HighlightDialog";
 import { JsonEditorPanel } from "../components/json/JsonEditorPanel";
 
+function getUserDisplayName(user) {
+  return (
+    user.user_metadata?.display_name ||
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email
+  );
+}
+
+function getUserAvatarUrl(user) {
+  return user.user_metadata?.avatar_url || user.user_metadata?.picture || "";
+}
+
+function getUserInitials(name) {
+  const words = name
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(Boolean);
+
+  if (words.length >= 2) {
+    return `${words[0][0]}${words[1][0]}`.toUpperCase();
+  }
+
+  return name.slice(0, 2).toUpperCase();
+}
+
 export function JsonComparePage({ onToggleTheme, session, theme }) {
   const [sourceJson, setSourceJson] = useState(starterSource);
   const [targetJson, setTargetJson] = useState(starterTarget);
@@ -102,6 +128,9 @@ export function JsonComparePage({ onToggleTheme, session, theme }) {
     await supabase.auth.signOut();
   }
 
+  const accountLabel = getUserDisplayName(session.user);
+  const accountAvatarUrl = getUserAvatarUrl(session.user);
+  const accountInitials = getUserInitials(accountLabel);
   const panels = [
     {
       id: "source",
@@ -129,7 +158,7 @@ export function JsonComparePage({ onToggleTheme, session, theme }) {
         <header className="flex flex-col gap-4 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex items-center gap-3">
             <img
-              alt="JSON Compare logo"
+              alt="Blame the API logo"
               className="h-14 w-36 rounded-lg object-contain sm:h-18 sm:w-48"
               src={logo}
             />
@@ -156,11 +185,31 @@ export function JsonComparePage({ onToggleTheme, session, theme }) {
             <div className="relative col-span-2 sm:col-span-1">
               <button
                 aria-expanded={accountMenuOpen}
-                className="flex w-full min-w-0 items-center justify-between gap-3 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-zinc-400 sm:w-64"
+                className="flex w-full min-w-0 items-center justify-between gap-3 rounded-md border border-zinc-300 bg-white px-3 py-2 text-left shadow-sm transition hover:border-zinc-400 sm:w-72"
                 onClick={() => setAccountMenuOpen((open) => !open)}
                 type="button"
               >
-                <span className="truncate">{session.user.email}</span>
+                <span className="flex min-w-0 items-center gap-3">
+                  {accountAvatarUrl ? (
+                    <img
+                      alt=""
+                      className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-zinc-200"
+                      src={accountAvatarUrl}
+                    />
+                  ) : (
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white ring-1 ring-teal-800">
+                      {accountInitials}
+                    </span>
+                  )}
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-zinc-950">
+                      {accountLabel}
+                    </span>
+                    <span className="block truncate text-xs font-medium text-zinc-500">
+                      {session.user.email}
+                    </span>
+                  </span>
+                </span>
                 <span aria-hidden="true" className="text-zinc-500">
                   ▾
                 </span>
@@ -169,8 +218,13 @@ export function JsonComparePage({ onToggleTheme, session, theme }) {
                 <div className="absolute right-0 top-11 z-40 w-full rounded-lg border border-zinc-200 bg-white p-2 shadow-xl sm:w-72">
                   <div className="border-b border-zinc-100 px-2 pb-2">
                     <p className="truncate text-sm font-semibold text-zinc-950">
-                      {session.user.email}
+                      {accountLabel}
                     </p>
+                    {accountLabel !== session.user.email ? (
+                      <p className="mt-1 truncate text-xs text-zinc-500">
+                        {session.user.email}
+                      </p>
+                    ) : null}
                   </div>
                   <div className="mt-2 space-y-1">
                     <button

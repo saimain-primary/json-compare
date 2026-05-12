@@ -30,7 +30,7 @@ export function OAuthConsentPage({ onToggleTheme, session, theme }) {
 
         <div className="mb-8 flex justify-center pt-6">
           <img
-            alt="JSON Compare logo"
+            alt="Blame the API logo"
             className="h-16 w-56 object-contain"
             src={logo}
           />
@@ -41,7 +41,7 @@ export function OAuthConsentPage({ onToggleTheme, session, theme }) {
             Google authorization
           </p>
           <h1 className="text-2xl font-bold text-zinc-950">
-            Sign in to JSON Compare
+            Sign in to Blame the API
           </h1>
           <p className="text-sm leading-6 text-zinc-600">
             Continue with your Google account to authorize access and return to
@@ -51,7 +51,7 @@ export function OAuthConsentPage({ onToggleTheme, session, theme }) {
 
         <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
           <p className="text-sm font-semibold text-zinc-900">
-            JSON Compare will use:
+            Blame the API will use:
           </p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-600">
             <li>Email address for your account.</li>
@@ -74,7 +74,7 @@ export function OAuthConsentPage({ onToggleTheme, session, theme }) {
             }}
             type="button"
           >
-            Open JSON Compare
+            Open Blame the API
           </button>
         ) : (
           <GoogleAuthButton
