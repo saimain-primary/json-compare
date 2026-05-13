@@ -6,7 +6,7 @@ export function ThemeToggle({ onToggle, theme }) {
   return (
     <button
       aria-pressed={isDark}
-      className="flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-2 py-1 text-sm font-semibold text-zinc-800 shadow-sm transition hover:border-zinc-400"
+      className="flex items-center gap-2 rounded-full  bg-white px-2 py-1 text-sm font-semibold text-zinc-800  transition"
       onClick={onToggle}
       type="button"
     >

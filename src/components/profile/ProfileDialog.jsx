@@ -1,15 +1,65 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Save, X } from "lucide-react";
 import { IconButton } from "../common/IconButton";
 import { supabase } from "../../supabaseClient";
+import { isValidUsername, normalizeUsername } from "./username";
 
 export function ProfileDialog({ onClose, session }) {
+  const metadata = session.user.user_metadata ?? {};
+  const initialDisplayName =
+    metadata.display_name ?? metadata.full_name ?? metadata.name ?? "";
+  const [username, setUsername] = useState(metadata.username ?? "");
   const [displayName, setDisplayName] = useState(
-    session.user.user_metadata?.display_name ?? "",
+    initialDisplayName,
   );
   const [newPassword, setNewPassword] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
   const [profileLoading, setProfileLoading] = useState(false);
+  const [profileReady, setProfileReady] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadProfile() {
+      if (!supabase) {
+        setProfileReady(true);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username, display_name")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (ignore) {
+        return;
+      }
+
+      if (error) {
+        setProfileMessage(
+          error.code === "42P01"
+            ? "Apply the profiles migration in Supabase to enable usernames."
+            : error.message,
+        );
+        setProfileReady(true);
+        return;
+      }
+
+      if (data) {
+        setUsername(data.username ?? metadata.username ?? "");
+        setDisplayName(data.display_name ?? initialDisplayName);
+      }
+
+      setProfileReady(true);
+    }
+
+    loadProfile();
+
+    return () => {
+      ignore = true;
+    };
+  }, [initialDisplayName, metadata.username, session.user.id]);
 
   async function handleProfileSubmit(event) {
     event.preventDefault();
@@ -20,15 +70,49 @@ export function ProfileDialog({ onClose, session }) {
       return;
     }
 
+    const normalizedUsername = normalizeUsername(username);
+    const trimmedDisplayName = displayName.trim();
+
+    if (!isValidUsername(normalizedUsername)) {
+      setProfileMessage(
+        "Username must be 3-30 characters using lowercase letters, numbers, or underscores.",
+      );
+      return;
+    }
+
+    setProfileLoading(true);
+    const { error: profileError } = await supabase.from("profiles").upsert(
+      {
+        display_name: trimmedDisplayName,
+        user_id: session.user.id,
+        username: normalizedUsername,
+      },
+      { onConflict: "user_id" },
+    );
+
+    if (profileError) {
+      setProfileLoading(false);
+      setProfileMessage(
+        profileError.code === "23505"
+          ? "That username is already taken."
+          : profileError.code === "42P01"
+            ? "Apply the profiles migration in Supabase to enable usernames."
+            : profileError.message,
+      );
+      return;
+    }
+
     const updates = {
-      data: { display_name: displayName.trim() },
+      data: {
+        display_name: trimmedDisplayName,
+        username: normalizedUsername,
+      },
     };
 
     if (newPassword) {
       updates.password = newPassword;
     }
 
-    setProfileLoading(true);
     const { error } = await supabase.auth.updateUser(updates);
     setProfileLoading(false);
 
@@ -38,6 +122,7 @@ export function ProfileDialog({ onClose, session }) {
     }
 
     setNewPassword("");
+    setUsername(normalizedUsername);
     setProfileMessage("Profile updated.");
   }
 
@@ -68,6 +153,23 @@ export function ProfileDialog({ onClose, session }) {
         </div>
 
         <div className="space-y-4 px-5 py-5">
+          <label className="block text-sm font-semibold text-zinc-800">
+            Username
+            <input
+              autoComplete="username"
+              className="mt-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-100"
+              disabled={!profileReady}
+              onChange={(event) => setUsername(event.target.value)}
+              placeholder="your_username"
+              type="text"
+              value={username}
+            />
+            <span className="mt-1 block text-xs font-normal text-zinc-500">
+              Unique, lowercase, 3-30 characters. Letters, numbers, and
+              underscores only.
+            </span>
+          </label>
+
           <label className="block text-sm font-semibold text-zinc-800">
             Display name
             <input
@@ -102,7 +204,7 @@ export function ProfileDialog({ onClose, session }) {
         <div className="flex justify-end border-t border-zinc-200 px-5 py-4">
           <button
             className="inline-flex items-center gap-2 rounded-md bg-zinc-950 px-4 py-2 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
-            disabled={profileLoading}
+            disabled={profileLoading || !profileReady}
             type="submit"
           >
             <Save aria-hidden="true" size={16} />

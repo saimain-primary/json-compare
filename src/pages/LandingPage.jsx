@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, GitCompare, History, Layers, Zap } from "lucide-react";
 import logo from "../assets/logo.png";
-import hero from "../assets/hero.png";
 import screenshot from "../assets/screenshot.png";
 import { LoginDialog } from "../components/auth/LoginDialog";
 
@@ -86,7 +85,6 @@ function ApiConnectorBackground() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* eslint-disable-next-line react/no-danger */}
           <style>{CSS_ANIMATIONS}</style>
           <pattern height="48" id="bg-dots" patternUnits="userSpaceOnUse" width="48">
             <circle cx="24" cy="24" fill="#94a3b8" r="1" />
@@ -216,8 +214,8 @@ export function LandingPage({ session }) {
       {/* Nav */}
       <header className="sticky top-0 z-30 border-b border-zinc-100 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <img alt="Blame the API" className="h-8 w-32 object-contain" src={logo} />
-          <CtaButton label={ctaLabel} onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800" />
+          <img alt="Who Changed the Response" className="h-20 w-auto object-contain" src={logo} />
+          <CtaButton label={session ? "Go to app" : "Sign in"} onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800" />
         </div>
       </header>
 
@@ -258,7 +256,7 @@ export function LandingPage({ session }) {
               <span className="h-3 w-3 rounded-full bg-zinc-300" />
             </div>
             <img
-              alt="Blame the API app screenshot"
+              alt="Who Changed the Response app screenshot"
               className="w-full object-cover object-top"
               src={screenshot}
             />
@@ -297,25 +295,27 @@ export function LandingPage({ session }) {
         </div>
       </section>
 
-      {/* CTA banner */}
-      <section className="bg-zinc-950 py-20">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="text-3xl font-bold text-white">
-            Ready to blame the API?
-          </h2>
-          <p className="mt-4 text-base text-zinc-400">
-            Sign in with Google and start comparing in under a minute.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <CtaButton label={ctaLabel} onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-xl bg-violet-500 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-violet-400" />
+      {/* CTA banner — only shown to unauthenticated visitors */}
+      {!session ? (
+        <section className="bg-zinc-950 py-20">
+          <div className="mx-auto max-w-2xl px-6 text-center">
+            <h2 className="text-3xl font-bold text-white">
+              Ready to see who changed the response?
+            </h2>
+            <p className="mt-4 text-base text-zinc-400">
+              Sign in with Google and start comparing in under a minute.
+            </p>
+            <div className="mt-8 flex justify-center">
+              <CtaButton label="Get started free" onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-xl bg-violet-500 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-violet-400" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Footer */}
       <footer className="border-t border-zinc-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-6 text-center text-xs text-zinc-400">
-          &copy; {new Date().getFullYear()} Blame the API
+          &copy; {new Date().getFullYear()} Who Changed the Response
         </div>
       </footer>
     </div>

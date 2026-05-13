@@ -7,29 +7,32 @@ export function JsonEditorPanel({
   onActiveLinePopupChange,
   onEditorScrollChange,
   panel,
+  readOnly = false,
   statusClass,
   statusLabel,
 }) {
   return (
-    <div className="flex min-h-[460px] flex-col rounded-lg border border-zinc-200 bg-zinc-100 sm:min-h-[560px] lg:min-h-[660px]">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-3">
-        <div>
-          <h2 className="text-base font-semibold text-zinc-950">
+    <div className="flex min-h-[460px] flex-col gap-2 sm:min-h-[560px] lg:min-h-[660px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+        <div className="min-w-0">
+          <h2 className="truncate text-sm font-semibold text-zinc-950">
             {panel.label}
           </h2>
-          <p className="mt-1 text-sm text-zinc-500">{panel.description}</p>
+          <p className="mt-0.5 text-xs text-zinc-500">{panel.description}</p>
         </div>
         <span
-          className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusClass(
-            panel.result,
-          )}`}
+          className={`rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ${
+            panel.loading
+              ? "bg-zinc-100 text-zinc-500 ring-zinc-200"
+              : statusClass(panel.result)
+          }`}
         >
-          {statusLabel(panel.result)}
+          {panel.loading ? "Loading…" : statusLabel(panel.result)}
         </span>
       </div>
 
       <div
-        className="relative grid min-h-[360px] flex-1 grid-cols-[2.75rem_1fr] overflow-hidden bg-white sm:min-h-[460px] sm:grid-cols-[3.25rem_1fr] lg:min-h-[560px]"
+        className="relative grid min-h-[360px] flex-1 grid-cols-[2.75rem_1fr] overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm sm:min-h-[460px] sm:grid-cols-[3.25rem_1fr] lg:min-h-[560px]"
         onMouseLeave={() => onActiveLinePopupChange(null)}
       >
         <div className="overflow-hidden border-r border-zinc-200 bg-zinc-100 px-3 py-4 text-right font-mono text-sm leading-6 text-zinc-500">
@@ -75,7 +78,11 @@ export function JsonEditorPanel({
         <textarea
           aria-label={panel.label}
           className="min-h-[360px] flex-1 resize-y border-0 bg-white p-3 font-mono text-sm leading-6 text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-violet-400 sm:min-h-[460px] sm:p-4 lg:min-h-[560px]"
-          onChange={(event) => panel.setValue(event.target.value)}
+          onChange={(event) => {
+            if (!readOnly) {
+              panel.setValue(event.target.value);
+            }
+          }}
           onScroll={(event) =>
             onEditorScrollChange((current) => ({
               ...current,
@@ -83,6 +90,7 @@ export function JsonEditorPanel({
             }))
           }
           placeholder={`Paste ${panel.label.toLowerCase()} here`}
+          readOnly={readOnly}
           spellCheck="false"
           value={panel.value}
         />

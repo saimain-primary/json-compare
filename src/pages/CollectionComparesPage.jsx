@@ -7,7 +7,7 @@ import { useCompares } from "../hooks/useCompares";
 export function CollectionComparesPage() {
   const navigate = useNavigate();
   const { collectionId } = useParams();
-  const { session } = useOutletContext();
+  const { openCompareTab, session } = useOutletContext();
   const { collection, collectionError, collectionLoading } = useCollection(
     collectionId,
     session.user.id,
@@ -22,8 +22,8 @@ export function CollectionComparesPage() {
 
   if (collectionLoading) {
     return (
-      <div className="rounded-lg border border-zinc-200 bg-white px-4 py-6 text-sm font-medium text-zinc-600">
-        Loading collection...
+      <div className="flex flex-1 items-center justify-center py-24">
+        <p className="text-sm font-medium text-zinc-400">Loading collection…</p>
       </div>
     );
   }
@@ -52,9 +52,14 @@ export function CollectionComparesPage() {
         error={comparesError}
         loading={comparesLoading}
         onCreateCompare={createCompare}
-        onOpenCompare={(compare) =>
-          navigate(`/collections/${collection.id}/compares/${compare.id}`)
-        }
+        onOpenCompare={(compare) => {
+          openCompareTab?.({
+            collectionId: collection.id,
+            id: compare.id,
+            name: compare.name,
+          });
+          navigate(`/collections/${collection.id}/compares/${compare.id}`);
+        }}
       />
     </div>
   );

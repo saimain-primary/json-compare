@@ -1,20 +1,29 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import logo from "../../assets/logo.png";
+import { EmailPasswordAuthForm } from "./EmailPasswordAuthForm";
 import { GoogleAuthButton } from "../common/GoogleAuthButton";
 import { signInWithGoogle } from "../../lib/auth";
 import { hasSupabaseConfig } from "../../supabaseClient";
 
 export function LoginDialog({ onClose }) {
-  const [authMessage, setAuthMessage] = useState("");
+  const [authMessage, setAuthMessage] = useState(null);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleGoogleLogin() {
-    setAuthMessage("");
+    setAuthMessage(null);
     setGoogleLoading(true);
-    const { error } = await signInWithGoogle();
-    if (error) {
-      setAuthMessage(error.message);
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        setAuthMessage({ tone: "error", text: error.message });
+        setGoogleLoading(false);
+      }
+    } catch (error) {
+      setAuthMessage({
+        tone: "error",
+        text: error?.message || "Google sign-in failed. Please try again.",
+      });
       setGoogleLoading(false);
     }
   }
@@ -39,24 +48,38 @@ export function LoginDialog({ onClose }) {
 
         <div className="flex justify-center">
           <img
-            alt="Blame the API"
+            alt="Who Changed the Response"
             className="h-12 w-44 object-contain"
             src={logo}
           />
         </div>
+         <div className="space-y-3 text-center">
+            <h1 className="text-2xl font-bold text-zinc-950">
+              Sign in to Who Changed the Response
+            </h1>
+            <p className="text-sm leading-6 text-zinc-600">
+              Use continue with Google.
+            </p>
+          </div>
+        {/* <EmailPasswordAuthForm onMessage={setAuthMessage} onSuccess={onClose} /> */}
 
-        <div className="mt-6 space-y-2 text-center">
-          <h2 className="text-xl font-bold text-zinc-950">
-            Sign in to Blame the API
-          </h2>
-          <p className="text-sm leading-6 text-zinc-500">
-            Continue with Google and find out who changed the JSON.
-          </p>
-        </div>
+        {/* <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-zinc-200" />
+          <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+            or
+          </span>
+          <div className="h-px flex-1 bg-zinc-200" />
+        </div> */}
 
         {authMessage ? (
-          <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            {authMessage}
+          <p
+            className={`rounded-md border px-3 py-2 text-sm ${
+              authMessage.tone === "success"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : "border-rose-200 bg-rose-50 text-rose-700"
+            }`}
+          >
+            {authMessage.text}
           </p>
         ) : null}
 

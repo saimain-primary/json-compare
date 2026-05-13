@@ -94,7 +94,7 @@ function JsonTreeNode({
             {isContainer ? (
               <button
                 aria-label={`${isExpanded ? "Collapse" : "Expand"} ${path}`}
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-zinc-600 bg-zinc-900 text-xs font-semibold text-zinc-100 transition hover:bg-zinc-800"
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-zinc-300 bg-white text-xs font-semibold text-zinc-800 transition hover:bg-zinc-100"
                 onClick={() => onToggle(path)}
                 type="button"
               >
@@ -113,7 +113,7 @@ function JsonTreeNode({
             className={`break-all ${
               highlighted || hasDescendantDifference
                 ? "font-semibold text-zinc-950"
-                : "text-zinc-100"
+                : "text-zinc-500"
             }`}
           >
             {isContainer ? containerLabel(value) : formatValue(value)}
@@ -143,7 +143,7 @@ function JsonTreeNode({
           ))}
           {hiddenEntryCount > 0 ? (
             <li
-              className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-400"
+              className="rounded-md border border-zinc-200 bg-zinc-100 px-3 py-2 font-mono text-sm text-zinc-600"
               style={{ marginLeft: `${Math.min(depth + 1, 8) * 14}px` }}
             >
               Showing first {maxVisibleTreeChildren} of {entries.length} items.
@@ -156,7 +156,7 @@ function JsonTreeNode({
       {isDepthLimited ? (
         <ol className="mt-1 space-y-1">
           <li
-            className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 font-mono text-sm text-zinc-400"
+            className="rounded-md border border-zinc-200 bg-zinc-100 px-3 py-2 font-mono text-sm text-zinc-600"
             style={{ marginLeft: `${Math.min(depth + 1, 8) * 14}px` }}
           >
             Nested preview paused at depth {maxTreeDepth}.
@@ -199,14 +199,14 @@ export function HighlightPane({ data, differences, title }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-zinc-950">
-      <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
-        <h3 className="text-sm font-semibold text-zinc-50">{title}</h3>
-        <span className="text-xs font-medium text-zinc-400">
+    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
+      <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-4 py-3">
+        <h3 className="text-sm font-semibold text-zinc-950">{title}</h3>
+        <span className="text-xs font-medium text-zinc-500">
           Highlighted JSON
         </span>
       </div>
-      <div className="max-h-[520px] overflow-auto p-3">
+      <div className="max-h-[520px] overflow-auto bg-white p-3">
         <ol className="space-y-1 font-mono text-sm">
           <JsonTreeNode
             depth={0}

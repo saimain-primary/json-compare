@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export function Breadcrumb({ items }) {
   return (
-    <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1 text-sm">
+    <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1 text-xs mt-4">
       {items.map((item, i) => (
         <Fragment key={i}>
           {i > 0 && (
@@ -16,7 +16,7 @@ export function Breadcrumb({ items }) {
           )}
           {item.to ? (
             <Link
-              className="shrink-0 font-medium text-violet-700 transition hover:text-violet-900"
+              className="shrink-0 font-medium text-xs text-violet-700 transition hover:text-violet-900"
               to={item.to}
             >
               {item.label}
@@ -24,7 +24,7 @@ export function Breadcrumb({ items }) {
           ) : (
             <span
               aria-current="page"
-              className="truncate font-semibold text-zinc-900"
+              className="truncate font-semibold text-xs text-zinc-900"
             >
               {item.label}
             </span>

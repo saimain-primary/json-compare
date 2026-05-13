@@ -40,12 +40,12 @@ export function HighlightDialog({
               <HighlightPane
                 data={sourceData}
                 differences={differences}
-                title="Source JSON highlights"
+                title="Backend JSON highlights"
               />
               <HighlightPane
                 data={targetData}
                 differences={differences}
-                title="Target JSON highlights"
+                title="Frontend JSON highlights"
               />
             </div>
           ) : (

@@ -25,7 +25,7 @@ export function useCompare(compareId, userId) {
 
       const { data, error } = await supabase
         .from("compares")
-        .select("id,name,collection_id,created_at,updated_at")
+        .select("id,name,collection_id,is_public,public_token,created_at,updated_at")
         .eq("id", compareId)
         .eq("user_id", userId)
         .maybeSingle();

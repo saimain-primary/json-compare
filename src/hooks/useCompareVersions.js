@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
 const bucketName = "json-version-files";
@@ -60,7 +60,7 @@ export function useCompareVersions({ collectionId, compareId, userId }) {
     };
   }, [compareId, userId]);
 
-  async function createVersion({
+  const createVersion = useCallback(async function createVersion({
     compareOptions,
     diffCount,
     name,
@@ -143,9 +143,9 @@ export function useCompareVersions({ collectionId, compareId, userId }) {
 
     setVersions((currentVersions) => [data, ...currentVersions]);
     return data;
-  }
+  }, [collectionId, compareId, userId]);
 
-  async function loadVersionFiles(version) {
+  const loadVersionFiles = useCallback(async function loadVersionFiles(version) {
     if (!supabase) {
       setVersionsError("Supabase is not configured.");
       return null;
@@ -175,7 +175,7 @@ export function useCompareVersions({ collectionId, compareId, userId }) {
       sourceJson: await sourceDownload.data.text(),
       targetJson: await targetDownload.data.text(),
     };
-  }
+  }, []);
 
   return {
     createVersion,

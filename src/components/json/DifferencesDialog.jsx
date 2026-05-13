@@ -61,7 +61,7 @@ export function DifferencesDialog({
                   </div>
                   <div>
                     <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                      Source
+                      Backend
                     </p>
                     <code className="block break-all rounded bg-zinc-100 px-3 py-2 font-mono text-sm text-zinc-800">
                       {difference.source}
@@ -69,7 +69,7 @@ export function DifferencesDialog({
                   </div>
                   <div>
                     <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                      Target
+                      Frontend
                     </p>
                     <code className="block break-all rounded bg-zinc-100 px-3 py-2 font-mono text-sm text-zinc-800">
                       {difference.target}

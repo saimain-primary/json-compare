@@ -19,9 +19,11 @@ export function AccountMenu({
   const accountLabel = getUserDisplayName(session.user);
   const accountAvatarUrl = getUserAvatarUrl(session.user);
   const accountInitials = getUserInitials(accountLabel);
+  const accountUsername = session.user.user_metadata?.username;
 
   return (
-    <div className="relative justify-self-end">
+    <div className="relative flex items-center gap-2 justify-self-end">
+      <ThemeToggle onToggle={onToggleTheme} theme={theme} />
       <button
         aria-expanded={menuOpen}
         aria-label="Open profile menu"
@@ -44,20 +46,25 @@ export function AccountMenu({
 
       {menuOpen ? (
         <div
-          className={`absolute right-0 z-40 w-72 rounded-lg border border-zinc-200 bg-white p-2 shadow-xl ${
+          className={`absolute right-0 z-40 w-40 rounded-lg border border-zinc-200 bg-white py-0 px-2 pb-2 shadow-xl ${
             placement === "top" ? "bottom-12" : "top-12"
           }`}
         >
-          <div className="border-b border-zinc-100 px-2 pb-2">
-            <p className="truncate text-sm font-semibold text-zinc-950">
+          {/* <div className="border-b border-zinc-100 px-2 pb-2"> */}
+            {/* <p className="truncate text-sm font-semibold text-zinc-950">
               {accountLabel}
-            </p>
+            </p> */}
+            {/* {accountUsername ? (
+              <p className="mt-1 truncate text-xs font-medium text-violet-700">
+                @{accountUsername}
+              </p>
+            ) : null}
             {accountLabel !== session.user.email ? (
               <p className="mt-1 truncate text-xs text-zinc-500">
                 {session.user.email}
               </p>
-            ) : null}
-          </div>
+            ) : null} */}
+          {/* </div> */}
           <div className="mt-2 space-y-1">
             <button
               className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium text-zinc-800 transition hover:bg-zinc-100"
@@ -67,10 +74,6 @@ export function AccountMenu({
               <User aria-hidden="true" size={16} />
               Profile
             </button>
-            <div className="flex items-center justify-between rounded-md px-2 py-2">
-              <span className="text-sm font-medium text-zinc-800">Theme</span>
-              <ThemeToggle onToggle={onToggleTheme} theme={theme} />
-            </div>
             <button
               className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-medium text-rose-700 transition hover:bg-rose-50"
               onClick={onLogout}

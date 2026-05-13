@@ -24,7 +24,7 @@ export function useCollections(userId) {
 
       const { data, error } = await supabase
         .from("collections")
-        .select("id,name,created_at,updated_at")
+        .select("id,name,is_public,public_token,created_at,updated_at")
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
@@ -66,7 +66,7 @@ export function useCollections(userId) {
     const { data, error } = await supabase
       .from("collections")
       .insert({ name: trimmedName, user_id: userId })
-      .select("id,name,created_at,updated_at")
+      .select("id,name,is_public,public_token,created_at,updated_at")
       .single();
 
     setCreatingCollection(false);

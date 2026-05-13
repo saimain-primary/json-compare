@@ -3,6 +3,7 @@ export function getUserDisplayName(user) {
     user.user_metadata?.display_name ||
     user.user_metadata?.full_name ||
     user.user_metadata?.name ||
+    user.user_metadata?.username ||
     user.email
   );
 }

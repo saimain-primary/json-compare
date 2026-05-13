@@ -27,7 +27,7 @@ export function useCompares(collectionId, userId) {
 
       const { data, error } = await supabase
         .from("compares")
-        .select("id,name,collection_id,created_at,updated_at")
+        .select("id,name,collection_id,is_public,public_token,created_at,updated_at")
         .eq("collection_id", collectionId)
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
@@ -70,7 +70,7 @@ export function useCompares(collectionId, userId) {
     const { data, error } = await supabase
       .from("compares")
       .insert({ collection_id: collectionId, name: trimmedName, user_id: userId })
-      .select("id,name,collection_id,created_at,updated_at")
+      .select("id,name,collection_id,is_public,public_token,created_at,updated_at")
       .single();
 
     setCreatingCompare(false);

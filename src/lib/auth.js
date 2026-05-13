@@ -22,3 +22,32 @@ export async function signInWithGoogle() {
     },
   });
 }
+
+export async function signInWithEmailPassword({ email, password }) {
+  if (!hasSupabaseConfig || !supabase) {
+    return {
+      error: new Error("Supabase is not configured. Check your Vite env values."),
+    };
+  }
+
+  return supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+}
+
+export async function signUpWithEmailPassword({ email, password }) {
+  if (!hasSupabaseConfig || !supabase) {
+    return {
+      error: new Error("Supabase is not configured. Check your Vite env values."),
+    };
+  }
+
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: getAuthRedirectUrl(),
+    },
+  });
+}

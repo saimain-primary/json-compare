@@ -25,7 +25,7 @@ export function useCollection(collectionId, userId) {
 
       const { data, error } = await supabase
         .from("collections")
-        .select("id,name,created_at,updated_at")
+        .select("id,name,is_public,public_token,created_at,updated_at")
         .eq("id", collectionId)
         .eq("user_id", userId)
         .maybeSingle();

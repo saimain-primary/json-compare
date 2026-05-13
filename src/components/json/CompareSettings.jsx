@@ -18,6 +18,7 @@ export function CompareSettings({
   compareAll,
   compareMenuOpen,
   compareOptions,
+  compact = false,
   onToggleAll,
   onToggleMenu,
   onToggleOption,
@@ -26,15 +27,21 @@ export function CompareSettings({
     <div className="relative">
       <button
         aria-expanded={compareMenuOpen}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-zinc-400 sm:w-auto"
+        className={`inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white font-semibold text-zinc-900 shadow-sm transition hover:border-zinc-400 sm:w-auto ${
+          compact ? "px-2 py-1 text-xs" : "px-4 py-2 text-sm"
+        }`}
         onClick={onToggleMenu}
         type="button"
       >
-        <SlidersHorizontal aria-hidden="true" size={16} />
-        Compare settings
+        <SlidersHorizontal aria-hidden="true" size={compact ? 14 : 16} />
+        Compare
       </button>
       {compareMenuOpen ? (
-        <div className="absolute left-0 top-11 z-40 w-[calc(100vw-1.5rem)] max-w-80 rounded-lg border border-zinc-200 bg-white p-2 shadow-xl sm:left-auto sm:right-0 sm:w-72">
+        <div
+          className={`absolute z-40 w-[calc(100vw-1.5rem)] max-w-80 rounded-lg border border-zinc-200 bg-white p-2 shadow-xl sm:left-auto sm:right-0 sm:w-72 ${
+            compact ? "right-0 top-8" : "left-0 top-11"
+          }`}
+        >
           <div className="border-b border-zinc-100 px-2 pb-2">
             <p className="text-sm font-semibold text-zinc-950">
               Compare settings

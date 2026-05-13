@@ -1,12 +1,12 @@
 export const starterSource = `{
-  "name": "blame-the-api",
+  "name": "who-changed-the-response",
   "version": "1.0.0",
   "features": ["paste", "format", "compare"],
   "enabled": true
 }`;
 
 export const starterTarget = `{
-  "name": "blame-the-api",
+  "name": "who-changed-the-response",
   "version": "1.1.0",
   "features": ["paste", "format", "compare", "export"],
   "enabled": true

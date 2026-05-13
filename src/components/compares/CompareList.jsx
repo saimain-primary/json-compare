@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, GitCompareArrows, Plus, X } from "lucide-react";
+import { Check, ChevronRight, GitCompareArrows, Plus, X } from "lucide-react";
 import { IconButton } from "../common/IconButton";
 
 function formatDate(value) {
@@ -19,12 +19,15 @@ export function CompareList({
   loading,
   onCreateCompare,
   onOpenCompare,
+  readOnly = false,
 }) {
   const [compareName, setCompareName] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (readOnly) return;
 
     const compare = await onCreateCompare(compareName);
 
@@ -35,25 +38,21 @@ export function CompareList({
   }
 
   return (
-    <section className="space-y-5">
-      <div className="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-white px-4 py-3 shadow-sm lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0">
-          <h1 className="truncate text-2xl font-bold text-zinc-950">
-            {collection.name}
-          </h1>
-          <p className="mt-1 text-sm text-zinc-600">
-            Create multiple compares inside this collection.
-          </p>
-        </div>
-
-        <button
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800 sm:w-auto"
-          onClick={() => setCreateDialogOpen(true)}
-          type="button"
-        >
-          <Plus aria-hidden="true" size={16} />
-          Create compare
-        </button>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-zinc-500">
+          {compares.length} {compares.length === 1 ? "compare" : "compares"}
+        </p>
+        {!readOnly ? (
+          <button
+            className="inline-flex items-center gap-1.5 rounded-md bg-zinc-950 px-3 py-1.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800"
+            onClick={() => setCreateDialogOpen(true)}
+            type="button"
+          >
+            <Plus aria-hidden="true" size={15} />
+            New compare
+          </button>
+        ) : null}
       </div>
 
       {error ? (
@@ -67,57 +66,58 @@ export function CompareList({
       ) : null}
 
       {loading ? (
-        <div className="rounded-lg border border-zinc-200 bg-white px-4 py-6 text-sm font-medium text-zinc-600">
-          Loading compares...
+        <div className="flex items-center justify-center py-16">
+          <p className="text-sm font-medium text-zinc-400">Loading compares…</p>
         </div>
       ) : compares.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-10 text-center">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
           <GitCompareArrows
             aria-hidden="true"
-            className="mx-auto text-zinc-400"
-            size={28}
+            className="text-zinc-300"
+            size={36}
           />
-          <p className="mt-3 text-base font-semibold text-zinc-950">
+          <p className="mt-4 text-base font-semibold text-zinc-950">
             No compares yet
           </p>
-          <p className="mt-2 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-zinc-500">
             Create a compare for an endpoint, bug, release, or payload pair.
           </p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {compares.map((compare) => (
+        <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
+          {compares.map((compare, index) => (
             <button
-              className="group rounded-lg border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-violet-500 hover:shadow-md"
+              className={`flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-zinc-50 ${
+                index < compares.length - 1 ? "border-b border-zinc-100" : ""
+              }`}
               key={compare.id}
               onClick={() => onOpenCompare(compare)}
               type="button"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="truncate text-base font-semibold text-zinc-950">
-                    {compare.name}
-                  </h2>
-                  <p className="mt-1 text-xs text-zinc-500">
-                    Created {formatDate(compare.created_at)}
-                  </p>
-                </div>
-                <span className="rounded-full bg-violet-50 px-2 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-200">
-                  Open
-                </span>
-              </div>
-              <div className="mt-5 rounded-md bg-zinc-50 px-3 py-2 text-xs">
-                <p className="font-semibold text-zinc-950">Versions</p>
-                <p className="mt-1 text-zinc-500">
-                  Save source and target JSON snapshots here.
+              <GitCompareArrows
+                aria-hidden="true"
+                className="shrink-0 text-zinc-400"
+                size={16}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-zinc-950">
+                  {compare.name}
+                </p>
+                <p className="mt-0.5 text-xs text-zinc-400">
+                  {formatDate(compare.created_at)}
                 </p>
               </div>
+              <ChevronRight
+                aria-hidden="true"
+                className="shrink-0 text-zinc-300"
+                size={16}
+              />
             </button>
           ))}
         </div>
       )}
 
-      {createDialogOpen ? (
+      {createDialogOpen && !readOnly ? (
         <div
           aria-labelledby="create-compare-title"
           aria-modal="true"

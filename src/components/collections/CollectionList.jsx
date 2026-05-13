@@ -35,25 +35,6 @@ export function CollectionList({
 
   return (
     <section className="space-y-5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-950">Collections</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600">
-            Create a collection for each API, environment, ticket, or incident.
-            JSON compares will live inside the selected collection.
-          </p>
-        </div>
-
-        <button
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800 sm:w-auto"
-          onClick={() => setCreateDialogOpen(true)}
-          type="button"
-        >
-          <Plus aria-hidden="true" size={16} />
-          Create collection
-        </button>
-      </div>
-
       {error ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           {error}

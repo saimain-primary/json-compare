@@ -1,42 +1,46 @@
-import { useState } from "react";
-import { Check, Download, Save, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, History, RotateCcw, Save, X } from "lucide-react";
 import { IconButton } from "../common/IconButton";
 
 function formatDate(value) {
   if (!value) return "New version";
-
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
 }
 
-function formatBytes(bytes) {
-  if (!bytes) return "0 B";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-}
-
 export function VersionPanel({
   canSave,
-  compare,
+  compact = false,
   error,
   loading,
   loadingVersionFiles,
   onLoadVersion,
   onSaveVersion,
+  readOnly = false,
   savingVersion,
   versions,
 }) {
-  const [versionName, setVersionName] = useState("");
+  const dropdownRef = useRef(null);
+  const [versionsOpen, setVersionsOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [versionName, setVersionName] = useState("");
+
+  useEffect(() => {
+    if (!versionsOpen) return undefined;
+    function onMouseDown(event) {
+      if (!dropdownRef.current?.contains(event.target)) {
+        setVersionsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [versionsOpen]);
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     const version = await onSaveVersion(versionName);
-
     if (version) {
       setVersionName("");
       setSaveDialogOpen(false);
@@ -44,81 +48,91 @@ export function VersionPanel({
   }
 
   return (
-    <section className="rounded-lg border border-zinc-200 bg-white shadow-sm">
-      <div className="flex flex-col gap-3 border-b border-zinc-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            Compare
-          </p>
-          <h2 className="truncate text-lg font-semibold text-zinc-950">
-            {compare.name}
-          </h2>
-        </div>
+    <div className="flex flex-wrap items-center gap-1">
+      {/* Versions dropdown */}
+      <div ref={dropdownRef} className="relative">
         <button
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-2 text-sm font-semibold text-zinc-50 shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 sm:w-auto"
-          disabled={!canSave || savingVersion}
-          onClick={() => setSaveDialogOpen(true)}
+          className={`inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white font-semibold text-zinc-700 shadow-sm transition hover:border-zinc-400 ${
+            compact ? "px-2 py-1 text-xs" : "px-3 py-2 text-sm"
+          }`}
+          onClick={() => setVersionsOpen((o) => !o)}
           type="button"
         >
-          <Save aria-hidden="true" size={16} />
-          Save version
+          <History aria-hidden="true" size={compact ? 14 : 15} />
+          Versions
+          {versions.length > 0 && (
+            <span className="text-xs font-normal text-zinc-400">
+              {versions.length}
+            </span>
+          )}
+          <ChevronDown
+            aria-hidden="true"
+            className={`transition-transform ${versionsOpen ? "rotate-180" : ""}`}
+            size={compact ? 12 : 13}
+          />
         </button>
-      </div>
 
-      {error ? (
-        <div className="border-b border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          {error}
-        </div>
-      ) : null}
-
-      <div className="p-3">
-        {loading ? (
-          <p className="rounded-md bg-zinc-50 px-3 py-3 text-sm text-zinc-600">
-            Loading versions...
-          </p>
-        ) : versions.length === 0 ? (
-          <p className="rounded-md border border-dashed border-zinc-300 bg-zinc-50 px-3 py-4 text-sm text-zinc-600">
-            No versions yet. Paste source and target JSON, then save a version.
-          </p>
-        ) : (
-          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-            {versions.map((version) => (
-              <button
-                className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-left transition hover:border-violet-500 hover:bg-white"
-                disabled={loadingVersionFiles}
-                key={version.id}
-                onClick={() => onLoadVersion(version)}
-                type="button"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-zinc-950">
-                      {version.name}
-                    </p>
-                    <p className="mt-1 text-xs text-zinc-500">
-                      {formatDate(version.created_at)}
-                    </p>
-                  </div>
-                  <Download
-                    aria-hidden="true"
-                    className="shrink-0 text-zinc-500"
-                    size={16}
-                  />
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-zinc-600">
-                  <span>Source {formatBytes(version.source_size)}</span>
-                  <span>Target {formatBytes(version.target_size)}</span>
-                </div>
-                <p className="mt-2 text-xs font-medium text-zinc-500">
-                  {version.diff_count} differences
-                </p>
-              </button>
-            ))}
+        {versionsOpen && (
+          <div className="absolute right-0 top-full z-50 mt-1 w-72 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg">
+            {error ? (
+              <p className="px-4 py-3 text-sm text-amber-700">{error}</p>
+            ) : loading ? (
+              <p className="px-4 py-3 text-sm text-zinc-500">Loading…</p>
+            ) : versions.length === 0 ? (
+              <p className="px-4 py-4 text-sm text-zinc-500">
+                No versions saved yet.
+              </p>
+            ) : (
+              <div className="max-h-72 overflow-auto">
+                {versions.map((version) => (
+                  <button
+                    className="flex w-full items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 text-left transition last:border-0 hover:bg-zinc-50 disabled:opacity-50"
+                    disabled={loadingVersionFiles}
+                    key={version.id}
+                    onClick={() => {
+                      onLoadVersion(version);
+                      setVersionsOpen(false);
+                    }}
+                    type="button"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-zinc-950">
+                        {version.name}
+                      </p>
+                      <p className="mt-0.5 text-xs text-zinc-500">
+                        {formatDate(version.created_at)} · {version.diff_count}{" "}
+                        diff{version.diff_count === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                    <RotateCcw
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-zinc-400"
+                      size={14}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {saveDialogOpen ? (
+      {!readOnly ? (
+        <button
+          className={`inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white font-semibold text-zinc-700 shadow-sm transition hover:border-zinc-400 disabled:cursor-not-allowed disabled:text-zinc-400 ${
+            compact ? "px-2 py-1 text-xs" : "px-3 py-2 text-sm"
+          }`}
+          disabled={!canSave || savingVersion}
+          onClick={() => setSaveDialogOpen(true)}
+          type="button"
+        >
+          <Save aria-hidden="true" size={compact ? 14 : 15} />
+          {savingVersion ? "Saving…" : compact ? "Save" : "Save version"}
+        </button>
+      ) : null}
+
+      {/* Save dialog */}
+      {saveDialogOpen && !readOnly ? (
         <div
           aria-labelledby="save-version-title"
           aria-modal="true"
@@ -185,12 +199,12 @@ export function VersionPanel({
                 type="submit"
               >
                 <Check aria-hidden="true" size={16} />
-                {savingVersion ? "Saving..." : "Save"}
+                {savingVersion ? "Saving…" : "Save"}
               </button>
             </div>
           </form>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }
