@@ -16,20 +16,26 @@ const features = [
     icon: Zap,
     title: "Pinpoint differences",
     description:
-      "Drill into nested objects and arrays. Each differing line links to a detailed breakdown so nothing slips through.",
+      "Drill into nested objects and arrays. Each differing line links to a detailed breakdown.",
   },
   {
     icon: History,
     title: "Version history",
     description:
-      "Save source and target snapshots against a compare. Revisit any prior state without losing context.",
+      "Save named snapshots against any compare. Revisit any prior state without losing context.",
   },
   {
     icon: Layers,
     title: "Collections",
     description:
-      "Group related compares into collections. Keep your API contracts organised and easy to find.",
+      "Group related compares into collections. Keep API contracts organised and easy to share.",
   },
+];
+
+const steps = [
+  { step: "01", title: "Create a collection", body: "Group your API endpoints together — one collection per service, feature, or sprint." },
+  { step: "02", title: "Paste your JSON", body: "Drop the backend response in one panel and the frontend payload in the other." },
+  { step: "03", title: "See exactly what changed", body: "Diffs are highlighted live. Save a version snapshot to track changes over time." },
 ];
 
 const NODES = [
@@ -75,7 +81,7 @@ function ApiConnectorBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 overflow-hidden opacity-50"
+      className="pointer-events-none absolute inset-0 overflow-hidden opacity-40 sm:opacity-50"
     >
       <svg
         className="h-full w-full"
@@ -90,10 +96,7 @@ function ApiConnectorBackground() {
             <circle cx="24" cy="24" fill="#94a3b8" r="1" />
           </pattern>
         </defs>
-
         <rect fill="url(#bg-dots)" height="100%" opacity="0.18" width="100%" />
-
-        {/* Edge lines — CSS dash-flow animation */}
         {EDGES.map(([a, b], i) => (
           <path
             d={`M ${NODES[a].x},${NODES[a].y} L ${NODES[b].x},${NODES[b].y}`}
@@ -102,13 +105,9 @@ function ApiConnectorBackground() {
             strokeDasharray="5 5"
             strokeOpacity="0.28"
             strokeWidth="1"
-            style={{
-              animation: `bta-dash ${1.6 + (i % 7) * 0.35}s linear infinite`,
-            }}
+            style={{ animation: `bta-dash ${1.6 + (i % 7) * 0.35}s linear infinite` }}
           />
         ))}
-
-        {/* Traveling packets — CSS motion path */}
         {EDGES.map(([a, b], i) => (
           <circle
             fill="#a78bfa"
@@ -120,65 +119,26 @@ function ApiConnectorBackground() {
             }}
           />
         ))}
-
-        {/* Nodes */}
         {NODES.map((n, i) => (
           <g key={i}>
-            {/* Pulse ring — CSS scale animation */}
             <circle
-              cx={n.x}
-              cy={n.y}
-              fill="none"
-              r="8"
-              stroke="#8D6EFA"
-              strokeWidth="1"
+              cx={n.x} cy={n.y} fill="none" r="8" stroke="#8D6EFA" strokeWidth="1"
               style={{
                 transformBox: "fill-box",
                 transformOrigin: "center",
                 animation: `bta-pulse 2.8s ease-out ${((i * 0.28) % 2.5).toFixed(2)}s infinite`,
               }}
             />
-            {/* Core dot */}
-            <circle
-              cx={n.x}
-              cy={n.y}
-              fill="#f5f3ff"
-              r="5"
-              stroke="#8D6EFA"
-              strokeOpacity="0.7"
-              strokeWidth="1.5"
-            />
-            {/* Method label */}
-            <text
-              dominantBaseline="auto"
-              fill="#7c3aed"
-              fontFamily="ui-monospace, monospace"
-              fontSize="8"
-              fontWeight="700"
-              opacity="0.6"
-              textAnchor="middle"
-              x={n.x}
-              y={n.y - 12}
-            >
+            <circle cx={n.x} cy={n.y} fill="#f5f3ff" r="5" stroke="#8D6EFA" strokeOpacity="0.7" strokeWidth="1.5" />
+            <text dominantBaseline="auto" fill="#7c3aed" fontFamily="ui-monospace, monospace" fontSize="8" fontWeight="700" opacity="0.6" textAnchor="middle" x={n.x} y={n.y - 12}>
               {n.method}
             </text>
-            {/* Route label */}
-            <text
-              dominantBaseline="hanging"
-              fill="#71717a"
-              fontFamily="ui-monospace, monospace"
-              fontSize="7.5"
-              opacity="0.55"
-              textAnchor="middle"
-              x={n.x}
-              y={n.y + 10}
-            >
+            <text dominantBaseline="hanging" fill="#71717a" fontFamily="ui-monospace, monospace" fontSize="7.5" opacity="0.55" textAnchor="middle" x={n.x} y={n.y + 10}>
               {n.route}
             </text>
           </g>
         ))}
       </svg>
-
       <div className="absolute inset-x-0 bottom-0 h-48 bg-linear-to-b from-transparent to-white" />
     </div>
   );
@@ -189,14 +149,14 @@ function CtaButton({ className, label, onOpen, session }) {
     return (
       <Link className={className} to="/collections">
         {label}
-        <ArrowRight aria-hidden="true" size={15} />
+        <ArrowRight aria-hidden="true" size={16} />
       </Link>
     );
   }
   return (
     <button className={className} onClick={onOpen} type="button">
       {label}
-      <ArrowRight aria-hidden="true" size={15} />
+      <ArrowRight aria-hidden="true" size={16} />
     </button>
   );
 }
@@ -212,48 +172,62 @@ export function LandingPage({ session }) {
       ) : null}
 
       {/* Nav */}
-      <header className="sticky top-0 z-30 border-b border-zinc-100 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <img alt="Who Changed the Response" className="h-20 w-auto object-contain" src={logo} />
-          <CtaButton label={session ? "Go to app" : "Sign in"} onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800" />
+      <header className="sticky top-0 z-30 border-b border-zinc-100 bg-white/95 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2 sm:px-6 sm:py-3">
+          <img
+            alt="Who Changed the Response"
+            className="h-12 w-auto object-contain sm:h-14"
+            src={logo}
+          />
+          <CtaButton
+            className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-3 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:px-4"
+            label={session ? "Go to app" : "Sign in"}
+            onOpen={() => setLoginOpen(true)}
+            session={session}
+          />
         </div>
       </header>
 
-      {/* Hero + screenshot share the animated background */}
+      {/* Hero + screenshot */}
       <div className="relative">
         <ApiConnectorBackground />
 
         {/* Hero */}
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 text-center">
+        <section className="relative z-10 mx-auto max-w-6xl px-4 pb-12 pt-12 text-center sm:px-6 sm:pb-16 sm:pt-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
             JSON comparison, simplified
           </div>
 
-          <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-extrabold leading-tight tracking-tight text-zinc-950 sm:text-6xl">
+          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-zinc-950 sm:mt-6 sm:text-5xl lg:text-6xl">
             Stop guessing{" "}
             <span className="text-violet-600">who broke the API</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-500">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-zinc-500 sm:mt-6 sm:max-w-2xl sm:text-lg">
             Compare JSON responses side-by-side, track changes across versions,
             and pinpoint exactly what shifted between releases — in seconds.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <CtaButton label={ctaLabel} onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-xl bg-zinc-950 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-zinc-800" />
+          <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
+            <CtaButton
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-zinc-800 sm:w-auto"
+              label={ctaLabel}
+              onOpen={() => setLoginOpen(true)}
+              session={session}
+            />
             {!session && (
               <p className="text-sm text-zinc-400">Free · No credit card required</p>
             )}
           </div>
         </section>
 
-        {/* Demo screenshot */}
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-24">
-          <div className="overflow-hidden rounded-2xl border border-zinc-200 shadow-2xl shadow-zinc-200">
-            <div className="flex items-center gap-1.5 border-b border-zinc-200 bg-zinc-50 px-4 py-3">
-              <span className="h-3 w-3 rounded-full bg-zinc-300" />
-              <span className="h-3 w-3 rounded-full bg-zinc-300" />
-              <span className="h-3 w-3 rounded-full bg-zinc-300" />
+        {/* Screenshot */}
+        <section className="relative z-10 mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-24">
+          <div className="overflow-hidden rounded-xl border border-zinc-200 shadow-2xl shadow-zinc-200 sm:rounded-2xl">
+            <div className="flex items-center gap-1.5 border-b border-zinc-200 bg-zinc-50 px-3 py-2 sm:px-4 sm:py-3">
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 sm:h-3 sm:w-3" />
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 sm:h-3 sm:w-3" />
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 sm:h-3 sm:w-3" />
             </div>
             <img
               alt="Who Changed the Response app screenshot"
@@ -264,22 +238,48 @@ export function LandingPage({ session }) {
         </section>
       </div>
 
-      {/* Features */}
-      <section className="border-t border-zinc-100 bg-zinc-50 py-24">
-        <div className="mx-auto max-w-6xl px-6">
+      {/* How it works */}
+      <section className="border-t border-zinc-100 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-zinc-950">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-950 sm:text-3xl">
+              Up and running in minutes
+            </h2>
+            <p className="mt-3 text-sm text-zinc-500 sm:text-base">
+              No setup. No integrations. Just paste and compare.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:mt-16 sm:grid-cols-3 sm:gap-8">
+            {steps.map(({ body, step, title }) => (
+              <div className="relative pl-14 sm:pl-0 sm:text-center" key={step}>
+                <span className="absolute left-0 top-0 flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-sm font-bold text-violet-700 sm:relative sm:mx-auto sm:mb-4">
+                  {step}
+                </span>
+                <h3 className="font-semibold text-zinc-950">{title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="border-t border-zinc-100 bg-zinc-50 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-950 sm:text-3xl">
               Everything you need to debug faster
             </h2>
-            <p className="mt-3 text-base text-zinc-500">
+            <p className="mt-3 text-sm text-zinc-500 sm:text-base">
               Built for developers who spend too long reading raw JSON diffs.
             </p>
           </div>
 
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-5 sm:mt-16 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {features.map(({ description, icon: Icon, title }) => (
               <div
-                className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
+                className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6"
                 key={title}
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50">
@@ -295,26 +295,31 @@ export function LandingPage({ session }) {
         </div>
       </section>
 
-      {/* CTA banner — only shown to unauthenticated visitors */}
+      {/* CTA banner — only for unauthenticated visitors */}
       {!session ? (
-        <section className="bg-zinc-950 py-20">
-          <div className="mx-auto max-w-2xl px-6 text-center">
-            <h2 className="text-3xl font-bold text-white">
+        <section className="bg-zinc-950 py-16 sm:py-20">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">
               Ready to see who changed the response?
             </h2>
-            <p className="mt-4 text-base text-zinc-400">
+            <p className="mt-3 text-sm text-zinc-400 sm:mt-4 sm:text-base">
               Sign in with Google and start comparing in under a minute.
             </p>
-            <div className="mt-8 flex justify-center">
-              <CtaButton label="Get started free" onOpen={() => setLoginOpen(true)} session={session} className="inline-flex items-center gap-2 rounded-xl bg-violet-500 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-violet-400" />
+            <div className="mt-7 flex justify-center sm:mt-8">
+              <CtaButton
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-500 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-violet-400 sm:w-auto"
+                label="Get started free"
+                onOpen={() => setLoginOpen(true)}
+                session={session}
+              />
             </div>
           </div>
         </section>
       ) : null}
 
       {/* Footer */}
-      <footer className="border-t border-zinc-100 bg-white py-8">
-        <div className="mx-auto max-w-6xl px-6 text-center text-xs text-zinc-400">
+      <footer className="border-t border-zinc-100 bg-white py-7 sm:py-8">
+        <div className="mx-auto max-w-6xl px-4 text-center text-xs text-zinc-400 sm:px-6">
           &copy; {new Date().getFullYear()} Who Changed the Response
         </div>
       </footer>
