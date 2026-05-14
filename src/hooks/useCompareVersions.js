@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { maxVersionFileSizeBytes } from "../lib/constants";
 
 const bucketName = "json-version-files";
+const allowedCompareOptionKeys = new Set(["key", "valueType", "value"]);
+
+function sanitizeCompareOptions(options) {
+  const sanitized = {};
+  for (const key of allowedCompareOptionKeys) {
+    sanitized[key] = Boolean(options?.[key]);
+  }
+  return sanitized;
+}
 
 function jsonFile(value) {
   return new Blob([value], { type: "application/json" });
@@ -79,12 +89,19 @@ export function useCompareVersions({ collectionId, compareId, userId }) {
       return null;
     }
 
+    const safeCompareOptions = sanitizeCompareOptions(compareOptions);
+    const sourceFile = jsonFile(sourceJson);
+    const targetFile = jsonFile(targetJson);
+
+    if (sourceFile.size > maxVersionFileSizeBytes || targetFile.size > maxVersionFileSizeBytes) {
+      setVersionsError("Each JSON file must be under 5 MB.");
+      return null;
+    }
+
     const versionId = crypto.randomUUID();
     const basePath = `${userId}/${collectionId}/${compareId}/${versionId}`;
     const sourcePath = `${basePath}/source.json`;
     const targetPath = `${basePath}/target.json`;
-    const sourceFile = jsonFile(sourceJson);
-    const targetFile = jsonFile(targetJson);
 
     setSavingVersion(true);
     setVersionsError("");
@@ -120,7 +137,7 @@ export function useCompareVersions({ collectionId, compareId, userId }) {
       .insert({
         id: versionId,
         compare_id: compareId,
-        compare_options: compareOptions,
+        compare_options: safeCompareOptions,
         diff_count: diffCount,
         name: trimmedName,
         source_path: sourcePath,

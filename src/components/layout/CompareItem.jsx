@@ -9,6 +9,7 @@ import {
   Share2,
   Trash2,
   X,
+  XCircle,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
@@ -22,6 +23,7 @@ export function CompareItem({
   onDuplicate,
   onOpenCompareTab,
   onRename,
+  userId,
 }) {
   const navigate = useNavigate();
   const { buttonRef, open: menuOpen, pos: menuPos, setOpen: setMenuOpen, openAt: openMenu } =
@@ -94,6 +96,7 @@ export function CompareItem({
       .from("compares")
       .update({ is_public: true, public_token: token })
       .eq("id", compare.id)
+      .eq("user_id", userId)
       .select("public_token")
       .single();
 
@@ -112,6 +115,19 @@ export function CompareItem({
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleUnshare() {
+    if (!supabase || !userId) return;
+    const { error } = await supabase
+      .from("compares")
+      .update({ is_public: false, public_token: null })
+      .eq("id", compare.id)
+      .eq("user_id", userId);
+    if (error) return;
+    setPublicToken("");
+    setShareUrl("");
+    setShareOpen(false);
   }
 
   return (
@@ -315,6 +331,16 @@ export function CompareItem({
                   )}
                 </button>
               </div>
+            </div>
+            <div className="flex justify-start border-t border-zinc-100 px-5 py-3">
+              <button
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-rose-600 transition hover:text-rose-800"
+                onClick={handleUnshare}
+                type="button"
+              >
+                <XCircle aria-hidden="true" size={13} />
+                Stop sharing
+              </button>
             </div>
           </div>
         </div>

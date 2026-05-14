@@ -4,10 +4,18 @@ const bucketName = "json-version-files";
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+const requiredEnv = ["SEED_USER_EMAIL", "SEED_USER_PASSWORD"];
+for (const key of requiredEnv) {
+  if (!process.env[key]) {
+    console.error(`Missing required env var: ${key}`);
+    process.exit(1);
+  }
+}
+
 const seedUser = {
   id: process.env.SEED_USER_ID || "",
-  email: process.env.SEED_USER_EMAIL || "demo@whochangedtheresponse.dev",
-  password: process.env.SEED_USER_PASSWORD || "DemoPassword123!",
+  email: process.env.SEED_USER_EMAIL,
+  password: process.env.SEED_USER_PASSWORD,
   username: process.env.SEED_USERNAME || "demo_user",
   displayName: process.env.SEED_DISPLAY_NAME || "Demo User",
 };

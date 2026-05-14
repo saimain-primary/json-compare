@@ -83,12 +83,15 @@ export function JsonEditorPanel({
               panel.setValue(event.target.value);
             }
           }}
-          onScroll={(event) =>
+          onScroll={(event) => {
+            const el = event.currentTarget;
+            if (!el) return;
+            const scrollTop = el.scrollTop;
             onEditorScrollChange((current) => ({
               ...current,
-              [panel.id]: event.currentTarget.scrollTop,
-            }))
-          }
+              [panel.id]: scrollTop,
+            }));
+          }}
           placeholder={`Paste ${panel.label.toLowerCase()} here`}
           readOnly={readOnly}
           spellCheck="false"

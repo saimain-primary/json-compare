@@ -1,7 +1,8 @@
 import { hasSupabaseConfig, supabase } from "../supabaseClient";
 
 export function getAuthRedirectUrl() {
-  return window.location.origin;
+  const base = import.meta.env.VITE_APP_URL || window.location.origin;
+  return `${base}/login`;
 }
 
 export async function signInWithGoogle() {

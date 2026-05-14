@@ -12,6 +12,7 @@ import {
   Share2,
   Trash2,
   X,
+  XCircle,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
@@ -170,6 +171,19 @@ export function CollectionItem({
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleUnshare() {
+    if (!supabase || !userId) return;
+    const { error } = await supabase
+      .from("collections")
+      .update({ is_public: false, public_token: null })
+      .eq("id", collection.id)
+      .eq("user_id", userId);
+    if (error) return;
+    setPublicToken("");
+    setShareUrl("");
+    setShareOpen(false);
   }
 
   async function handleRenameCompare(compareId, newName) {
@@ -351,6 +365,7 @@ export function CollectionItem({
                 onDuplicate={handleDuplicateCompare}
                 onOpenCompareTab={onOpenCompareTab}
                 onRename={handleRenameCompare}
+                userId={userId}
               />
             ))
           )}
@@ -468,6 +483,16 @@ export function CollectionItem({
                   )}
                 </button>
               </div>
+            </div>
+            <div className="flex justify-start border-t border-zinc-100 px-5 py-3">
+              <button
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-rose-600 transition hover:text-rose-800"
+                onClick={handleUnshare}
+                type="button"
+              >
+                <XCircle aria-hidden="true" size={13} />
+                Stop sharing
+              </button>
             </div>
           </div>
         </div>

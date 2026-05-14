@@ -26,6 +26,11 @@ export function EmailPasswordAuthForm({ onMessage, onSuccess }) {
       return;
     }
 
+    if (isRegister && password.length < 8) {
+      onMessage({ tone: "error", text: "Password must be at least 8 characters." });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -103,12 +108,12 @@ export function EmailPasswordAuthForm({ onMessage, onSuccess }) {
           <input
             autoComplete={isRegister ? "new-password" : "current-password"}
             className="min-w-0 flex-1 bg-transparent text-sm text-zinc-950 outline-none"
-            minLength={6}
+            minLength={8}
             onChange={(event) => {
               clearMessage();
               setPassword(event.target.value);
             }}
-            placeholder="Minimum 6 characters"
+            placeholder="Minimum 8 characters"
             type="password"
             value={password}
           />

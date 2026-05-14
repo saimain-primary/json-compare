@@ -20,6 +20,7 @@ export const defaultCompareOptions = {
 
 export const themeStorageKey = "blame-the-api:theme";
 
+export const maxVersionFileSizeBytes = 5 * 1024 * 1024; // 5 MB per file
 export const maxDifferences = 500;
 export const maxRenderedLineNumbers = 3000;
 export const maxPreviewLength = 500;
